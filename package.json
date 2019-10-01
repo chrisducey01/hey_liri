@@ -1,0 +1,26 @@
+{
+  "name": "hey_liri",
+  "version": "1.0.0",
+  "description": "CLI using node that will retrieve movie/music/concert info and return to the console",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisducey01/hey_liri.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisducey01/hey_liri/issues"
+  },
+  "homepage": "https://github.com/chrisducey01/hey_liri#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "dotenv": "^8.1.0",
+    "moment": "^2.24.0",
+    "node-spotify-api": "^1.1.1"
+  }
+}
