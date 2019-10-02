@@ -30,8 +30,11 @@ function getBandEvent(query, band) {
       response.data.forEach(event=>{
         const eventDate = moment(event.datetime,"YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
         // console.log(eventDate);
+        let eventOutput = `${event.venue.name} - ${event.venue.city}, `;
+        event.venue.region.length > 0 ? eventOutput += `${event.venue.region}, ` : null;
+        eventOutput += `${event.venue.country} - ${eventDate}`;
   
-        console.log(event.venue.name, event.venue.city, event.venue.region, event.venue.country, eventDate);
+        console.log(eventOutput);
       })
     })
 }
