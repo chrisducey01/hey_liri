@@ -1,20 +1,41 @@
 const env = require("dotenv").config();
 const keys = require("./keys.js");
 const Spotify = require('node-spotify-api');
-
+const axios = require("axios");
+const moment = require("moment");
 
 const spotify = new Spotify(keys.spotify);
-
 const action = process.argv[2];
 const lookupItem = process.argv[3];
 
 switch (action) {
+  case "concert-this":
+    getBandEvent(axios, lookupItem);
+    break;
   case "spotify-this-song":
     spotifySongSearch(spotify, lookupItem);
     break;
   default:
     console.log(`Error: Unknown option specified on input: ${action}`);
 }
+
+
+function getBandEvent(query, band) {
+  const queryUrl = `https://rest.bandsintown.com/artists/${band}/events?app_id=codingbootcamp`;
+  query.get(queryUrl)
+    .then(response => {
+      // console.log(response.data);
+
+      console.log(`Event Results for ${band}`);
+      response.data.forEach(event=>{
+        const eventDate = moment(event.datetime,"YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
+        // console.log(eventDate);
+  
+        console.log(event.venue.name, event.venue.city, event.venue.region, event.venue.country, eventDate);
+      })
+    })
+}
+
 
 function spotifySongSearch(spotify, song) {
   spotify.search(
