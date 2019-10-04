@@ -15,6 +15,9 @@ switch (action) {
   case "spotify-this-song":
     spotifySongSearch(spotify, lookupItem);
     break;
+  case "movie-this":
+    getMovieInfo(axios, lookupItem);
+    break;
   default:
     console.log(`Error: Unknown option specified on input: ${action}`);
 }
@@ -27,13 +30,13 @@ function getBandEvent(query, band) {
       // console.log(response.data);
 
       console.log(`Event Results for ${band}`);
-      response.data.forEach(event=>{
-        const eventDate = moment(event.datetime,"YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
+      response.data.forEach(event => {
+        const eventDate = moment(event.datetime, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
         // console.log(eventDate);
         let eventOutput = `${event.venue.name} - ${event.venue.city}, `;
         event.venue.region.length > 0 ? eventOutput += `${event.venue.region}, ` : null;
         eventOutput += `${event.venue.country} - ${eventDate}`;
-  
+
         console.log(eventOutput);
       })
     })
@@ -68,4 +71,14 @@ function spotifySongSearch(spotify, song) {
       songResult.preview_url ? console.log(`Listen to a Preview: ${songResult.preview_url}`)
         : console.log(`Listen on Spotify: ${songResult.external_urls.spotify}`);
     });
+}
+
+
+function getMovieInfo(query, movie) {
+  const queryUrl = `http://www.omdbapi.com/?apikey=trilogy&t=${movie}&type=movie&r=json`;
+
+  query.get(queryUrl)
+    .then(response => {
+      console.log(response.data);
+    })
 }
