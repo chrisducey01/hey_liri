@@ -27,12 +27,11 @@ function getBandEvent(query, band) {
   const queryUrl = `https://rest.bandsintown.com/artists/${band}/events?app_id=codingbootcamp`;
   query.get(queryUrl)
     .then(response => {
-      // console.log(response.data);
 
       console.log(`Event Results for ${band}`);
       response.data.forEach(event => {
         const eventDate = moment(event.datetime, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
-        // console.log(eventDate);
+        
         let eventOutput = `${event.venue.name} - ${event.venue.city}, `;
         event.venue.region.length > 0 ? eventOutput += `${event.venue.region}, ` : null;
         eventOutput += `${event.venue.country} - ${eventDate}`;
@@ -60,11 +59,6 @@ function spotifySongSearch(spotify, song) {
         return artist.name;
       }).join(", ");
 
-      // Dump raw data to log
-      // console.log(data);
-      // console.log(data.tracks.items[0]);
-      // console.log(data.tracks.items[0].artists);
-
       console.log(`Artist${artistNames.includes(",") ? "s" : ""}: ${artistNames}`);
       console.log(`Song: ${songResult.name}`);
       console.log(`Album: ${songResult.album.name}`);
@@ -74,11 +68,18 @@ function spotifySongSearch(spotify, song) {
 }
 
 
-function getMovieInfo(query, movie) {
+function getMovieInfo(query, movie = "Mr. Nobody") {
   const queryUrl = `http://www.omdbapi.com/?apikey=trilogy&t=${movie}&type=movie&r=json`;
 
   query.get(queryUrl)
     .then(response => {
-      console.log(response.data);
+      console.log(`Title: ${response.data.Title}`);
+      console.log(`Released: ${response.data.Year}`);
+      console.log(`IMDB Rating: ${response.data.imdbRating}`);
+      console.log(`Rotten Tomatoes Score: ${response.data.Ratings.find(rating=>{return rating.Source === "Rotten Tomatoes"}).Value}`);
+      console.log(`Made in: ${response.data.Country}`);
+      console.log(`Language: ${response.data.Language}`);
+      console.log(`Plot: ${response.data.Plot}`);
+      console.log(`Actors: ${response.data.Actors}`);
     })
 }
