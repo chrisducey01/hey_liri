@@ -5,6 +5,7 @@ const axios = require("axios");
 const moment = require("moment");
 const fs = require("fs");
 
+const logFile = "./logfile.log";
 const spotify = new Spotify(keys.spotify);
 let action = process.argv[2];
 let lookupItem = process.argv[3];
@@ -34,8 +35,9 @@ function getBandEvent(query, band) {
   const queryUrl = `https://rest.bandsintown.com/artists/${band}/events?app_id=codingbootcamp`;
   query.get(queryUrl)
     .then(response => {
+      let output = [];
 
-      console.log(`Event Results for ${band}`);
+      output.push(`Event Results for ${band}`);      
       response.data.forEach(event => {
         const eventDate = moment(event.datetime, "YYYY-MM-DDTHH:mm:ss").format("MM/DD/YYYY [at] hh:mm:ss a");
         
@@ -43,8 +45,9 @@ function getBandEvent(query, band) {
         event.venue.region.length > 0 ? eventOutput += `${event.venue.region}, ` : null;
         eventOutput += `${event.venue.country} - ${eventDate}`;
 
-        console.log(eventOutput);
+        output.push(eventOutput);
       })
+      printAndLog(output,'Bands In Town event search');
     })
 }
 
@@ -66,11 +69,14 @@ function spotifySongSearch(spotify, song) {
         return artist.name;
       }).join(", ");
 
-      console.log(`Artist${artistNames.includes(",") ? "s" : ""}: ${artistNames}`);
-      console.log(`Song: ${songResult.name}`);
-      console.log(`Album: ${songResult.album.name}`);
-      songResult.preview_url ? console.log(`Listen to a Preview: ${songResult.preview_url}`)
-        : console.log(`Listen on Spotify: ${songResult.external_urls.spotify}`);
+      let output = [];
+      output.push(`Artist${artistNames.includes(",") ? "s" : ""}: ${artistNames}`);
+      output.push(`Song: ${songResult.name}`);
+      output.push(`Album: ${songResult.album.name}`);
+      songResult.preview_url ? output.push(`Listen to a Preview: ${songResult.preview_url}`)
+        : output.push(`Listen on Spotify: ${songResult.external_urls.spotify}`);
+
+      printAndLog(output,'Spotify song search');
     });
 }
 
@@ -80,20 +86,37 @@ function getMovieInfo(query, movie = "Mr. Nobody") {
 
   query.get(queryUrl)
     .then(response => {
-      console.log(`Title: ${response.data.Title}`);
-      console.log(`Released: ${response.data.Year}`);
-      console.log(`IMDB Rating: ${response.data.imdbRating}`);
-      console.log(`Rotten Tomatoes Score: ${response.data.Ratings.find(rating=>{return rating.Source === "Rotten Tomatoes"}).Value}`);
-      console.log(`Made in: ${response.data.Country}`);
-      console.log(`Language: ${response.data.Language}`);
-      console.log(`Plot: ${response.data.Plot}`);
-      console.log(`Actors: ${response.data.Actors}`);
+      let output = [];
+      output.push(`Title: ${response.data.Title}`);
+      output.push(`Released: ${response.data.Year}`);
+      output.push(`IMDB Rating: ${response.data.imdbRating}`);
+      output.push(`Rotten Tomatoes Score: ${response.data.Ratings.find(rating=>{return rating.Source === "Rotten Tomatoes"}).Value}`);
+      output.push(`Made in: ${response.data.Country}`);
+      output.push(`Language: ${response.data.Language}`);
+      output.push(`Plot: ${response.data.Plot}`);
+      output.push(`Actors: ${response.data.Actors}`);
+
+      printAndLog(output,'OMDB movie search');
     })
 }
 
 
 function doWhatItSays(fs,filename){
   const result = fs.readFileSync(filename,'utf8').split(",");
-  console.log(result);
   return { action: result[0].trim(), lookupItem: result[1].trim() };
+}
+
+
+function printAndLog(outputArr, type){
+  const timestamp = moment().format("YYYY-MM-DD HH:mm:ss");
+  fs.appendFileSync(logFile,`\n***** ${timestamp} - Returning ${type} information *****\n`);
+
+  outputArr.forEach(output=>{
+    fs.appendFile(logFile,`${output}\n`,err=>{
+      if(err){
+        console.log("ERROR - printAndLog - Unable to write data to log file.");
+      }
+    })
+    console.log(output);
+  })
 }
