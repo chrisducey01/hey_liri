@@ -3,10 +3,17 @@ const keys = require("./keys.js");
 const Spotify = require('node-spotify-api');
 const axios = require("axios");
 const moment = require("moment");
+const fs = require("fs");
 
 const spotify = new Spotify(keys.spotify);
-const action = process.argv[2];
-const lookupItem = process.argv[3];
+let action = process.argv[2];
+let lookupItem = process.argv[3];
+
+if(action === "do-what-it-says"){
+  let result = doWhatItSays(fs,"./random.txt");
+  action = result.action;
+  lookupItem = result.lookupItem;
+}
 
 switch (action) {
   case "concert-this":
@@ -82,4 +89,11 @@ function getMovieInfo(query, movie = "Mr. Nobody") {
       console.log(`Plot: ${response.data.Plot}`);
       console.log(`Actors: ${response.data.Actors}`);
     })
+}
+
+
+function doWhatItSays(fs,filename){
+  const result = fs.readFileSync(filename,'utf8').split(",");
+  console.log(result);
+  return { action: result[0].trim(), lookupItem: result[1].trim() };
 }
