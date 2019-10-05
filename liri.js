@@ -52,7 +52,7 @@ function getBandEvent(query, band) {
 }
 
 
-function spotifySongSearch(spotify, song) {
+function spotifySongSearch(spotify, song = "The Sign") {
   spotify.search(
     {
       type: 'track',
